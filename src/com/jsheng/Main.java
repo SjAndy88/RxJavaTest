@@ -5,6 +5,7 @@ import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 import java.util.Arrays;
@@ -607,6 +608,128 @@ public class Main {
 //                }
 //            });
 
+
+//        List<String> just1 = Arrays.asList("Hello 11", "Hello 12", "Hello 13");
+//        List<String> just2 = Arrays.asList("Hello 26", "Hello 25", "Hello 24", "Hello 23", "Hello 22", "Hello 21");
+//        Observable<String> tObservable1 = Observable.create((Observable.OnSubscribe<String>) subscriber -> {
+//            try {
+//                for (int i = 0; i < just1.size(); i++) {
+////                    System.out.println("Thread : " + Thread.currentThread().getName());
+//                    Thread.sleep(400);
+//                    System.out.println("time(" + System.currentTimeMillis() % 10000 + ")");
+//                    subscriber.onNext(just1.get(i));
+//                }
+//                subscriber.onCompleted();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }).subscribeOn(Schedulers.io());
+//        Observable<String> tObservable2 = Observable.create((Observable.OnSubscribe<String>) subscriber -> {
+//            try {
+//                for (int i = 0; i < just2.size(); i++) {
+////                    System.out.println("Thread : " + Thread.currentThread().getName());
+//                    Thread.sleep(200);
+//                    System.out.println("time(" + System.currentTimeMillis() % 10000 + ")");
+//                    subscriber.onNext(just2.get(i));
+//                }
+//                subscriber.onCompleted();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }).subscribeOn(Schedulers.newThread());
+//        tObservable1.join(tObservable2,
+//                tLeft -> {
+//                    System.out.println("tLeft : " + tLeft + ", time(" + System.currentTimeMillis() % 10000 + ")");
+//                    return Observable.timer(300, TimeUnit.MILLISECONDS);
+//                },
+//                tRight -> {
+//                    System.out.println("tRight : " + tRight + ", time(" + System.currentTimeMillis() % 10000 + ")");
+//                    return Observable.timer(100, TimeUnit.MILLISECONDS);
+//                },
+//                (tLeft, tRight) -> {
+//                    System.out.println("tLeft : " + tLeft + ", tRight : " + tRight);
+//                    return tLeft + ":" + tRight;
+//                })
+//                .observeOn(Schedulers.io())
+//                .subscribe(new Observer<String>() {
+//                    @Override
+//                    public void onCompleted() {
+//                        System.out.println("onCompleted");
+////                        System.out.println("onCompleted Thread : " + Thread.currentThread().getName());
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        System.out.println("onError : " + e.getMessage());
+////                        System.out.println("onError Thread : " + Thread.currentThread().getName());
+//                    }
+//
+//                    @Override
+//                    public void onNext(String s) {
+//                        System.out.println("onNext : " + s);
+////                        System.out.println("onNext Thread : " + Thread.currentThread().getName());
+//                    }
+//                });
+
+
+        List<String> just1 = Arrays.asList("Hello 11", "Hello 12", "Hello 13");
+        List<String> just2 = Arrays.asList("Hello 26", "Hello 25", "Hello 24", "Hello 23", "Hello 22", "Hello 21");
+        Observable<String> tObservable1 = Observable.create((Observable.OnSubscribe<String>) subscriber -> {
+            try {
+                for (int i = 0; i < just1.size(); i++) {
+//                    System.out.println("Thread : " + Thread.currentThread().getName());
+                    Thread.sleep(400);
+                    String s1 = just1.get(i);
+                    System.out.println("s1 : " + s1 + ", time(" + System.currentTimeMillis() % 10000 + ")");
+                    subscriber.onNext(just1.get(i));
+                }
+                subscriber.onCompleted();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).subscribeOn(Schedulers.io());
+        Observable<String> tObservable2 = Observable.create((Observable.OnSubscribe<String>) subscriber -> {
+            try {
+                for (int i = 0; i < just2.size(); i++) {
+//                    System.out.println("Thread : " + Thread.currentThread().getName());
+                    Thread.sleep(200);
+                    String s2 = just2.get(i);
+                    System.out.println("s2 : " + s2 + ", time(" + System.currentTimeMillis() % 10000 + ")");
+                    subscriber.onNext(just2.get(i));
+                }
+                subscriber.onCompleted();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).subscribeOn(Schedulers.newThread());
+
+        Observable.combineLatest(tObservable2, tObservable1,
+                new Func2<String, String, String>() {
+                    @Override
+                    public String call(String s1, String s2) {
+                        return s1 + ":" + s2;
+                    }
+                })
+                .observeOn(Schedulers.io())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onCompleted() {
+                        System.out.println("onCompleted");
+//                        System.out.println("onCompleted Thread : " + Thread.currentThread().getName());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        System.out.println("onError : " + e.getMessage());
+//                        System.out.println("onError Thread : " + Thread.currentThread().getName());
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        System.out.println("onNext : " + s);
+//                        System.out.println("onNext Thread : " + Thread.currentThread().getName());
+                    }
+                });
 
         for (; ; ) {
 
