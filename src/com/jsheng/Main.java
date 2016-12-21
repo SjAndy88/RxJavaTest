@@ -572,6 +572,7 @@ public class Main {
 //                subscriber.onCompleted();
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();
+//                System.out.println("InterruptedException : " + Thread.currentThread().getName());
 //            }
 //        }).subscribeOn(Schedulers.io());
 //        Observable<String> tObservable2 = Observable.create((Observable.OnSubscribe<String>) subscriber -> {
@@ -584,9 +585,11 @@ public class Main {
 //                subscriber.onCompleted();
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();
+//                System.out.println("InterruptedException : " + Thread.currentThread().getName());
 //            }
 //        }).subscribeOn(Schedulers.io());
-//        Observable.merge(tObservable2, tObservable1)
+//        Observable.zip(tObservable1, tObservable2,
+//                (str1, str2) -> str1 + ";;" + str2)
 //            .observeOn(Schedulers.newThread())
 //            .subscribe(new Observer<String>() {
 //                @Override
